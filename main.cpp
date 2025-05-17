@@ -17,7 +17,7 @@ struct Ship {
     sf::Color color;
 };
 
-// --- Button Struct ---
+// Button Struct
 struct Button {
     sf::Text text;
     sf::RectangleShape shape;
@@ -72,17 +72,17 @@ struct Button {
     }
 };
 
-// --- Function to check if a ship can be placed at given coordinates ---
+
 bool canPlaceShip(const std::vector<Ship>& ships, int row, int col, int length, ShipDirection direction, int gridRows, int gridCols) {
     for (const auto& ship : ships) {
         if (ship.direction == direction) {
-            // Check horizontal ships
+            
             if (direction == ShipDirection::HORIZONTAL) {
-                // Check if new ship overlaps existing ship
+                
                 for (int i = 0; i < length; ++i) {
                     for (int j = 0; j < ship.length; ++j) {
                         if (row == ship.startRow && col + i == ship.startCol + j) {
-                            return false;  // Overlap
+                            return false;  
                         }
                     }
                 }
@@ -92,7 +92,7 @@ bool canPlaceShip(const std::vector<Ship>& ships, int row, int col, int length, 
                 for (int i = 0; i < length; ++i) {
                     for (int j = 0; j < ship.length; ++j) {
                         if (row + i == ship.startRow + j && col == ship.startCol) {
-                            return false;  // Overlap
+                            return false;  
                         }
                     }
                 }
@@ -120,7 +120,7 @@ bool canPlaceShip(const std::vector<Ship>& ships, int row, int col, int length, 
             }
         }
     }
-    // Check borders
+    
     if (direction == ShipDirection::HORIZONTAL && (col + length > gridCols)) {
         return false;
     }
@@ -130,21 +130,20 @@ bool canPlaceShip(const std::vector<Ship>& ships, int row, int col, int length, 
     return true;
 }
 
-// --- Function to check if a ship can be placed at given coordinates with one-cell gap ---
+
 bool canPlaceShipWithGap(const std::vector<Ship>& ships, int row, int col, int length, ShipDirection direction, int gridRows, int gridCols) {
-    // Check if ship placement is possible
+    
     if (!canPlaceShip(ships, row, col, length, direction, gridRows, gridCols)) {
         return false;
     }
 
-    // Check for one-cell gap
     for (const auto& ship : ships) {
-        // Check if ship overlaps existing ship with gap
+        
         if (direction == ShipDirection::HORIZONTAL && ship.direction == ShipDirection::HORIZONTAL) {
             for (int i = 0; i < length; ++i) {
                 for (int j = 0; j < ship.length; ++j) {
                     if (abs(row - ship.startRow) <= 1 && abs((col + i) - (ship.startCol + j)) <= 1) {
-                        return false; // Too close horizontally
+                        return false; 
                     }
                 }
             }
@@ -153,7 +152,7 @@ bool canPlaceShipWithGap(const std::vector<Ship>& ships, int row, int col, int l
             for (int i = 0; i < length; ++i) {
                 for (int j = 0; j < ship.length; ++j) {
                     if (abs((row + i) - (ship.startRow + j)) <= 1 && abs(col - ship.startCol) <= 1) {
-                        return false; // Too close vertically
+                        return false; 
                     }
                 }
             }
@@ -180,7 +179,7 @@ bool canPlaceShipWithGap(const std::vector<Ship>& ships, int row, int col, int l
     return true;
 }
 
-// --- Function to randomly place ships ---
+
 void autoPlaceShipsInPlacement(std::vector<Ship>& ships, int gridRows, int gridCols) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -188,7 +187,7 @@ void autoPlaceShipsInPlacement(std::vector<Ship>& ships, int gridRows, int gridC
     std::uniform_int_distribution<> colDist(0, gridCols - 1);
     std::uniform_int_distribution<> dirDist(0, 1); // 0 - horizontal, 1 - vertical
 
-    // Define ship lengths and counts
+    
     std::vector<int> shipLengths = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
     std::vector<sf::Color> shipColors = { sf::Color::Cyan, sf::Color::Magenta, sf::Color::Magenta, sf::Color::Blue, sf::Color::Blue, sf::Color::Blue, sf::Color::Green, sf::Color::Green, sf::Color::Green, sf::Color::Green };
     ships.clear();
@@ -208,28 +207,28 @@ void autoPlaceShipsInPlacement(std::vector<Ship>& ships, int gridRows, int gridC
 }
 
 void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
-    // --- Window Dimensions ---
+    
     const int windowWidth = 1400;
     const int windowHeight = 700;
 
-    // --- Board Margin ---
+    
     const int boardMarginLeft = 50;
     const int boardMarginTop = 50;
     const int boardMarginBottom = 50;
     const int boardMarginRight = 50;
 
-    // --- Grid Dimensions ---
+    
     const int gridRows = 10;
     const int gridCols = 10;
 
-    // --- Space Between Boards ---
+    
     const int spaceBetweenBoards = 250;
 
-    // --- Cell Size ---
+    
     const float cellSizeX = static_cast<float>(windowWidth - boardMarginLeft - boardMarginRight - spaceBetweenBoards) / (2 * gridCols);
     const float cellSizeY = static_cast<float>(windowHeight - boardMarginTop - boardMarginBottom) / gridRows;
 
-    // --- Load Textures ---
+    
     sf::Texture playerBoardTexture;
     if (!playerBoardTexture.loadFromFile("field.png")) {
         std::cerr << "Error loading player board image!" << std::endl;
@@ -242,7 +241,7 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
         return;
     }
 
-    // --- Create Sprites ---
+   
     sf::Sprite playerBoardSprite;
     playerBoardSprite.setTexture(playerBoardTexture);
     playerBoardSprite.setScale(cellSizeX / (playerBoardTexture.getSize().x / gridCols), cellSizeY / (playerBoardTexture.getSize().y / gridRows));
@@ -253,14 +252,14 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
     opponentBoardSprite.setScale(cellSizeX / (opponentBoardTexture.getSize().x / gridCols), cellSizeY / (opponentBoardTexture.getSize().y / gridRows));
     opponentBoardSprite.setPosition(boardMarginLeft + gridCols * cellSizeX + spaceBetweenBoards, boardMarginTop);
 
-    // --- Font Loading ---
+    
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Error loading font!" << std::endl;
         return;
     }
 
-    // --- Create Letters for the Top Row (A, B, C, ...) ---
+    
     std::vector<sf::Text> columnLetters(gridCols);
     for (int i = 0; i < gridCols; ++i) {
         columnLetters[i].setFont(font);
@@ -283,7 +282,7 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
         columnLettersOpponent[i].setPosition(boardMarginLeft + gridCols * cellSizeX + spaceBetweenBoards + i * cellSizeX + cellSizeX / 2.0f, boardMarginTop - 30); // Centered
     }
 
-    // --- Create Numbers for the Side Row (1, 2, 3, ...) ---
+    
     std::vector<sf::Text> rowNumbers(gridRows);
     for (int i = 0; i < gridRows; ++i) {
         rowNumbers[i].setFont(font);
@@ -306,42 +305,39 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
         rowNumbersOpponent[i].setPosition(boardMarginLeft + gridCols * cellSizeX + spaceBetweenBoards - 20, boardMarginTop + i * cellSizeY + cellSizeY / 2.0f);   // Centered
     }
 
-    // --- Create Buttons ---
     Button pauseButton("Pause", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, windowWidth / 2.0f, windowHeight / 2.0f - 50); // Centered
     Button exitButton("Exit", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, windowWidth / 2.0f, windowHeight / 2.0f + 50);  // Centered
 
     bool isPaused = false;
-
-    // --- Create the Window ---
+    
     sf::RenderWindow gameWindow(sf::VideoMode(windowWidth, windowHeight), "Sea Battle - Game");
 
-    // --- Game Loop ---
+   
     while (gameWindow.isOpen()) {
         sf::Event event;
         while (gameWindow.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 gameWindow.close();
 
-            // --- Handle Mouse Clicks ---
+
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- Get Mouse Position ---
+                    // Get Mouse Position 
                     sf::Vector2i mousePos = sf::Mouse::getPosition(gameWindow);
 
-                    // --- Check if click is on player's board ---
+                   
                     if (mousePos.x >= boardMarginLeft && mousePos.x < boardMarginLeft + gridCols * cellSizeX && mousePos.y >= boardMarginTop && mousePos.y < boardMarginTop + gridRows * cellSizeY) {
-                        // --- Calculate Cell Coordinates ---
+                       
                         int col = (mousePos.x - boardMarginLeft) / cellSizeX;
                         int row = (mousePos.y - boardMarginTop) / cellSizeY;
-                        std::cout << "Clicked on cell: " << row << ", " << col << std::endl; // Output to Console for testing
-                        // --- Create new ship (Example: Always length 1) ---
-                        //ships.push_back({ 1, row, col, ShipDirection::HORIZONTAL, sf::Color::Green });
+                        std::cout << "Clicked on cell: " << row << ", " << col << std::endl; 
+                        
                     }
-                    // --- Pause/Continue Button ---
+                    //  Pause/Continue Button 
                     if (pauseButton.isMouseOver(gameWindow)) {
                         pauseButton.setPressed(true);
                     }
-                    // --- Exit Button ---
+                    //  Exit Button 
                     if (exitButton.isMouseOver(gameWindow)) {
                         exitButton.setPressed(true);
                     }
@@ -349,7 +345,7 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
             }
             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- Pause/Continue Button ---
+                    //  Pause/Continue Button 
                     if (pauseButton.isPressed) {
                         isPaused = !isPaused;
                         if (isPaused) {
@@ -358,7 +354,7 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
                         else {
                             pauseButton.text.setString("Pause");
                         }
-                        //Recenter Text, in case the size change.
+                        
                         sf::FloatRect textRect = pauseButton.text.getLocalBounds();
                         pauseButton.text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
                         pauseButton.setPosition(windowWidth / 2.0f, windowHeight / 2.0f - 50);
@@ -366,7 +362,7 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
                     }
                     pauseButton.setPressed(false);
 
-                    // --- Exit Button ---
+                    // Exit Button 
                     if (exitButton.isPressed) {
                         gameWindow.close();
                     }
@@ -377,27 +373,27 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
         pauseButton.update(gameWindow);
         exitButton.update(gameWindow);
 
-        gameWindow.clear(sf::Color::Black); // Clear the window
+        gameWindow.clear(sf::Color::Black); 
 
-        // --- Draw Boards ---
+
         gameWindow.draw(playerBoardSprite);
         gameWindow.draw(opponentBoardSprite);
 
-        // --- Draw Column Letters ---
+
         for (auto& letter : columnLetters) {
             gameWindow.draw(letter);
         }
         for (auto& letter : columnLettersOpponent) {
             gameWindow.draw(letter);
         }
-        // --- Draw Side Numbers ---
+
         for (auto& number : rowNumbers) {
             gameWindow.draw(number);
         }
         for (auto& number : rowNumbersOpponent) {
             gameWindow.draw(number);
         }
-        // --- Draw Ships ---
+
         for (const auto& ship : playerShips) {
             for (int i = 0; i < ship.length; ++i) {
                 sf::RectangleShape shipPart(sf::Vector2f(cellSizeX, cellSizeY));
@@ -415,61 +411,61 @@ void runSeaBattleGame(std::vector<Ship> playerShips) { // Receive player's ships
             }
 
         }
-        // --- Draw Pause/Continue Button ---
+        // Draw Pause/Continue Button
         pauseButton.draw(gameWindow);
-        // --- Draw Exit Button ---
+        // Draw Exit Button
         exitButton.draw(gameWindow);
 
         gameWindow.display();
     }
 }
 
-// Function to display the ship placement window
+
 void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
     const int windowWidth = 1000;
     const int windowHeight = 700;
-    const int boardSize = 500; // Size of the board (square)
+    const int boardSize = 500; 
 
     sf::RenderWindow placementWindow(sf::VideoMode(windowWidth, windowHeight), "Ship Placement");
 
-    // --- Calculate Cell Size ---
+
     const int gridRows = 10;
     const int gridCols = 10;
 
     const float cellSizeX = static_cast<float>(boardSize) / gridCols;
     const float cellSizeY = static_cast<float>(boardSize) / gridRows;
 
-    // --- Board Margin ---
+    // Board Margin 
     const int boardMarginLeft = 50;
     const int boardMarginTop = 50;
 
-    // -- Position of Ships: ---
+    //  Position of Ships:
     const int shipPanelPositionX = boardMarginLeft + boardSize + 50;
 
-    // --- Ships to Place ---
+    // Ships to Place
     std::vector<Ship> shipsToPlace = {
-        { 4, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Cyan },   // 1x Battleship (length 4)
-        { 3, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Magenta },  // 2x Cruiser (length 3)
-        { 2, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Blue },    // 3x Destroyer (length 2)
-        { 1, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Green }    // 4x Submarine (length 1)
+        { 4, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Cyan },   // 1x  (length 4)
+        { 3, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Magenta },  // 2x (length 3)
+        { 2, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Blue },    // 3x (length 2)
+        { 1, 0, 0, ShipDirection::HORIZONTAL, sf::Color::Green }    // 4x (length 1)
     };
 
-    // --- Generate and Place Ships
+
     std::vector<Ship> placedShips;
     autoPlaceShipsInPlacement(placedShips, gridRows, gridCols);
 
-    // --- Create Buttons ---
+    //  Create Buttons 
     Button autoButton("Auto", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, boardMarginLeft + boardSize / 2.0f - 50, windowHeight - 50);
     Button battleButton("To Battle", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, boardMarginLeft + boardSize + 100, windowHeight - 50);
     Button rotateButton("Rotate", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, shipPanelPositionX, 50);
 
-    // --- Load the Board Texture:
+
     sf::Texture seaBattleTexture;
     if (!seaBattleTexture.loadFromFile("field.png")) {
         std::cerr << "Error loading image!" << std::endl;
         return;
     }
-    // Create the board sprite
+
     sf::Sprite seaBattleSprite;
     seaBattleSprite.setTexture(seaBattleTexture);
     seaBattleSprite.setScale(cellSizeX / (seaBattleTexture.getSize().x / gridCols), cellSizeY / (seaBattleTexture.getSize().y / gridRows));
@@ -480,18 +476,18 @@ void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
         while (placementWindow.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 placementWindow.close();
-            // --- Handle Mouse Clicks ---
+
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- Auto Button ---
+                    //  Auto Button 
                     if (autoButton.isMouseOver(placementWindow)) {
                         autoButton.setPressed(true);
                     }
-                    // --- Battle Button ---
+                    // Battle Button 
                     if (battleButton.isMouseOver(placementWindow)) {
                         battleButton.setPressed(true);
                     }
-                    // --- Rotate Button ---
+                    //  Rotate Button 
                     if (rotateButton.isMouseOver(placementWindow)) {
                         rotateButton.setPressed(true);
                     }
@@ -499,19 +495,19 @@ void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
             }
             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- Auto Button ---
+                    // Auto Button 
                     if (autoButton.isPressed) {
-                        placedShips.clear();  // Clear previous placement
+                        placedShips.clear();  
                         autoPlaceShipsInPlacement(placedShips, gridRows, gridCols);
                     }
                     autoButton.setPressed(false);
-                    // --- Battle Button ---
+                    //  Battle Button 
                     if (battleButton.isPressed) {
                         placementWindow.close();
-                        runSeaBattleGame(placedShips); // Launch to Main Game
+                        runSeaBattleGame(placedShips); 
                     }
                     battleButton.setPressed(false);
-                    // --- Rotate Button ---
+                    //  Rotate Button 
                     if (rotateButton.isPressed) {
                         std::cout << "Rotate" << std::endl;
 
@@ -520,17 +516,17 @@ void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
                 }
             }
         }
-        //Update Buttons
+
         autoButton.update(placementWindow);
         battleButton.update(placementWindow);
         rotateButton.update(placementWindow);
 
         placementWindow.clear(sf::Color::Black);
 
-        // --- Draw Board: ---
+
         placementWindow.draw(seaBattleSprite);
 
-        // --- Draw Placed Ships:  (Draw automatically placed ships) ---
+
         for (const auto& ship : placedShips) {
             for (int j = 0; j < ship.length; ++j) {
                 sf::RectangleShape shipPart(sf::Vector2f(cellSizeX, cellSizeY));
@@ -547,7 +543,7 @@ void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
             }
         }
 
-        // --- Draw Ships to Place (Panel) ---
+        
         for (size_t i = 0; i < shipsToPlace.size(); ++i) {
             for (int j = 0; j < shipsToPlace[i].length; ++j) {
                 sf::RectangleShape shipPart(sf::Vector2f(cellSizeX, cellSizeY));
@@ -569,38 +565,38 @@ void showShipPlacementWindow(sf::RenderWindow& mainWindow, sf::Font& font) {
     }
 }
 
-// Function to display the game mode menu
+
 void showGameModeMenu(sf::RenderWindow& mainWindow, sf::Font& font) {
-    // Menu Window Dimensions
+
     const int menuWidth = 400;
     const int menuHeight = 400;
 
-    // Create buttons for Game Mode selection
+  
     Button withComputerButton("With Computer", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, menuWidth / 2.0f, menuHeight / 2.0f - 50);
     Button withFriendButton("With Friend", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, menuWidth / 2.0f, menuHeight / 2.0f + 50);
     Button backButton("Back", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, menuWidth / 2.0f, menuHeight / 2.0f + 150);
 
     sf::RenderWindow gameModeMenu(sf::VideoMode(menuWidth, menuHeight), "Select Game Mode");
 
-    // --- Game Mode Menu Loop ---
+
     while (gameModeMenu.isOpen()) {
         sf::Event event;
         while (gameModeMenu.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 gameModeMenu.close();
 
-            // --- Handle Mouse Clicks ---
+
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- With Computer Button ---
+                    //  With Computer Button 
                     if (withComputerButton.isMouseOver(gameModeMenu)) {
                         withComputerButton.setPressed(true);
                     }
-                    // --- With Friend Button ---
+                    // With Friend Button 
                     if (withFriendButton.isMouseOver(gameModeMenu)) {
                         withFriendButton.setPressed(true);
                     }
-                    // --- Back Button ---
+                    // Back Button 
                     if (backButton.isMouseOver(gameModeMenu)) {
                         backButton.setPressed(true);
                     }
@@ -608,22 +604,22 @@ void showGameModeMenu(sf::RenderWindow& mainWindow, sf::Font& font) {
             }
             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- With Computer Button ---
+                    //  With Computer Button 
                     if (withComputerButton.isPressed) {
                         gameModeMenu.close();
                         showShipPlacementWindow(mainWindow, font);
-                        // runSeaBattleGame();
+
 
                     }
                     withComputerButton.setPressed(false);
-                    // --- With Friend Button ---
+                    //  With Friend Button 
                     if (withFriendButton.isPressed) {
                         gameModeMenu.close();
                         runSeaBattleGame(std::vector<Ship>()); // Pass empty vector for player ships
                     }
                     withFriendButton.setPressed(false);
 
-                    // --- Back Button ---
+                    //  Back Button 
                     if (backButton.isPressed) {
                         gameModeMenu.close();  // Close the game mode menu
                     }
@@ -636,7 +632,7 @@ void showGameModeMenu(sf::RenderWindow& mainWindow, sf::Font& font) {
         withFriendButton.update(gameModeMenu);
         backButton.update(gameModeMenu);
 
-        gameModeMenu.clear(sf::Color::Cyan);  // Changed to DarkGray, so, no, cyan doesn't look good with our gray font :D
+        gameModeMenu.clear(sf::Color::Cyan);  
 
         withComputerButton.draw(gameModeMenu);
         withFriendButton.draw(gameModeMenu);
@@ -647,39 +643,39 @@ void showGameModeMenu(sf::RenderWindow& mainWindow, sf::Font& font) {
 }
 
 int main() {
-    // --- First window: Main Menu ---
+    //  First window: Main Menu 
     const int menuWindowWidth = 400;
     const int menuWindowHeight = 300;
 
     sf::RenderWindow mainWindow(sf::VideoMode(menuWindowWidth, menuWindowHeight), "Main Menu");
 
-    // --- Create Font ---
+
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Error loading font!" << std::endl;
         return EXIT_FAILURE;
     }
-    // --- Create Buttons ---
+    //  Create Buttons 
     Button playButton("Play", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, menuWindowWidth / 2.0f, menuWindowHeight / 2.0f - 50); // Centered
 
     Button exitButton("Exit", font, sf::Color::White, sf::Color::Yellow, sf::Color::Red, menuWindowWidth / 2.0f, menuWindowHeight / 2.0f + 50);  // Centered
 
-    // --- Game Loop for Main Menu ---
+    // Game Loop for Main Menu 
     while (mainWindow.isOpen()) {
         sf::Event event;
         while (mainWindow.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 mainWindow.close();
 
-            // --- Handle mouse clicks on the "Play" button ---
+            // Play button
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
 
-                    // --- Play button clicked: ---
+                    //  Play button clicked: 
                     if (playButton.isMouseOver(mainWindow)) {
                         playButton.setPressed(true);
                     }
-                    // --- Exit button clicked: ---
+                    //  Exit button clicked: 
                     if (exitButton.isMouseOver(mainWindow)) {
                         exitButton.setPressed(true);
                     }
@@ -687,13 +683,13 @@ int main() {
             }
             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // --- Play button clicked: ---
+                    // Play button clicked:
                     if (playButton.isPressed) {
                         showGameModeMenu(mainWindow, font);
                     }
                     playButton.setPressed(false);
 
-                    // --- Exit button clicked: ---
+                    // Exit button clicked: 
                     if (exitButton.isPressed) {
                         mainWindow.close();
                     }
